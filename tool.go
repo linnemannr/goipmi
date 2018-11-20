@@ -22,15 +22,15 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 )
 
 type tool struct {
-	*Connection
+	Path       string
+	Connection ToolConnection
 }
 
-func newToolTransport(c *Connection) transport {
+func newToolTransport(c ToolConnection) transport {
 	return &tool{Connection: c}
 }
 
@@ -64,21 +64,8 @@ func (t *tool) Console() error {
 }
 
 func (t *tool) options() []string {
-	intf := t.Interface
-	if intf == "" {
-		intf = "lanplus"
-	}
 
-	options := []string{
-		"-H", t.Hostname,
-		"-U", t.Username,
-		"-P", t.Password,
-		"-I", intf,
-	}
-
-	if t.Port != 0 {
-		options = append(options, "-p", strconv.Itoa(t.Port))
-	}
+	options := t.Connection.options()
 
 	return options
 }

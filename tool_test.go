@@ -26,7 +26,7 @@ import (
 func TestOptions(t *testing.T) {
 	tests := []struct {
 		should string
-		conn   *Connection
+		conn   ToolConnection
 		expect []string
 	}{
 		{
@@ -64,6 +64,20 @@ func TestOptions(t *testing.T) {
 				Interface: "lan",
 			},
 			[]string{"-H", "h", "-U", "u", "-P", "p", "-I", "lan"},
+		},
+		{
+			"should use bmc interface",
+			&BMCConnection{
+				DeviceNumber: 0,
+			},
+			[]string{"-d", "0", "-I", "bmc"},
+		},
+		{
+			"should use bmc interface with dev number 1",
+			&BMCConnection{
+				DeviceNumber: 1,
+			},
+			[]string{"-d", "1", "-I", "bmc"},
 		},
 	}
 

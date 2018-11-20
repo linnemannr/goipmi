@@ -21,7 +21,21 @@ import (
 	"net"
 )
 
-// Connection properties for a Client
+type ToolConnection interface {
+	options() []string
+}
+
+type BMCConnection struct {
+	DeviceNumber uint
+}
+
+func (c *BMCConnection) options() []string {
+	return []string{
+		"-d", fmt.Sprint(c.DeviceNumber),
+		"-I", "bmc"}
+}
+
+// Connection properties for a Client (lanplus)
 type Connection struct {
 	Path      string
 	Hostname  string
@@ -29,6 +43,24 @@ type Connection struct {
 	Username  string
 	Password  string
 	Interface string
+}
+
+func (c *Connection) options() []string {
+	intf := c.Interface
+	if intf == "" {
+		intf = "lanplus"
+	}
+	options := []string{
+		"-H", c.Hostname,
+		"-U", c.Username,
+		"-P", c.Password,
+		"-I", intf,
+	}
+
+	if c.Port != 0 {
+		options = append(options, "-p", fmt.Sprint(c.Port))
+	}
+	return options
 }
 
 // RemoteIP returns the remote (bmc) IP address of the Connection
